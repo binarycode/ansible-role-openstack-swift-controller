@@ -1,1 +1,6 @@
 ---
+- include: identity.yml
+- include: packages.yml
+- include: configuration.yml
+- include: rings.yml
+- include: services.yml

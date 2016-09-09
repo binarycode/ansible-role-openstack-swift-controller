@@ -1,1 +1,14 @@
 ---
+openstack_admin_password: admin
+
+swift_password: swift
+
+openstack_region: RegionOne
+
+swift_partition_power: 10
+swift_replicas: 3
+
+nodes: []
+
+swift_suffix: swift
+swift_prefix: swift

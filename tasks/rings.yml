@@ -1,0 +1,8 @@
+---
+- include: rings/ring.yml
+  with_items:
+    - account
+    - container
+    - object
+  loop_control:
+    loop_var: ring_name

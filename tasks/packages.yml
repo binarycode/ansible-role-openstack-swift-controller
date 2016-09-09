@@ -1,0 +1,11 @@
+---
+- name: Install Swift dependencies.
+  yum:
+    name:  '{{ item }}'
+    state: present
+  with_items:
+    - openstack-swift-proxy
+    - python-swiftclient
+    - python-keystoneclient
+    - python-keystonemiddleware
+    - memcached

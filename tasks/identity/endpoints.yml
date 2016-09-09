@@ -1,0 +1,18 @@
+---
+- name:         Get list of Swift endpoints.
+  register:     openstack_swift_endpoints
+  changed_when: no
+  command:      openstack endpoint list -f value -c Interface --service object-store
+
+- name:    Create Swift endpoints.
+  command: 'openstack endpoint create --region {{ openstack_region }} object-store {{ item.name }} {{ item.url }}'
+  when:    '"{{ item.name }}" not in openstack_swift_endpoints.stdout'
+  with_items:
+    - name: public
+      url:  http://controller:8080/v1/AUTH_%(tenant_id)s
+
+    - name: internal
+      url:  http://controller:8080/v1/AUTH_%(tenant_id)s
+
+    - name: admin
+      url:  http://controller:8080/v1

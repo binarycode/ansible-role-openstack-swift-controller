@@ -1,0 +1,13 @@
+---
+- name:         Get list of users.
+  register:     openstack_users
+  changed_when: no
+  command:      openstack user list -f value -c Name --domain default
+
+- name:    Create Swift user.
+  command: 'openstack user create --domain default --password {{ swift_password }} swift'
+  when:    '"swift" not in openstack_users.stdout'
+
+- name:         Assign admin role to Swift user in service project.
+  changed_when: no
+  command:      'openstack role add --project service --user swift admin'

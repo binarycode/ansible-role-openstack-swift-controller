@@ -1,0 +1,92 @@
+---
+- name: Download proxy server configuration sample.
+  get_url:
+    url:  https://git.openstack.org/cgit/openstack/swift/plain/etc/proxy-server.conf-sample?h=stable/mitaka
+    dest: /etc/swift/proxy-server.conf
+
+- name: Configure defaults.
+  crudini:
+    path: /etc/swift/proxy-server.conf
+    config:
+      DEFAULT:
+        bind_port: '8080'
+        user:      swift
+        swift_dir: /etc/swift
+
+- name: Configure pipeline.
+  crudini:
+    path: /etc/swift/proxy-server.conf
+    config:
+      'pipeline:main':
+        pipeline: catch_errors gatekeeper healthcheck proxy-logging cache container_sync bulk ratelimit authtoken keystoneauth container-quotas account-quotas slo dlo versioned_writes proxy-logging proxy-server
+
+- name: Configure automatic account creation.
+  crudini:
+    path: /etc/swift/proxy-server.conf
+    config:
+      'app:proxy-server':
+        use:                egg:swift#proxy
+        account_autocreate: 'True'
+
+- name: Configure operator roles.
+  crudini:
+    path: /etc/swift/proxy-server.conf
+    config:
+      'filter:keystoneauth':
+        use:            egg:swift#keystoneauth
+        operator_roles: admin,user
+
+- name: Configure Identity service access.
+  crudini:
+    path: /etc/swift/proxy-server.conf
+    config:
+      'filter:authtoken':
+        'paste.filter_factory': keystonemiddleware.auth_token:filter_factory
+        auth_uri:               http://controller:5000
+        auth_url:               http://controller:35357
+        memcached_servers:      controller:11211
+        auth_type:              password
+        project_domain_name:    default
+        user_domain_name:       default
+        project_name:           service
+        username:               swift
+        password:               '{{ swift_password }}'
+        delay_auth_decision:    'True'
+
+- name: Configure memcached location.
+  crudini:
+    path: /etc/swift/proxy-server.conf
+    config:
+      'filter:cache':
+        use:              egg:swift#memcache
+        memcache_servers: controller:11211
+
+- name: Download swift configuration sample.
+  get_url:
+    url:  https://git.openstack.org/cgit/openstack/swift/plain/etc/swift.conf-sample?h=stable/mitaka
+    dest: /etc/swift/swift.conf
+
+- name: Configure suffix and prefix.
+  crudini:
+    path: /etc/swift/swift.conf
+    config:
+      swift-hash:
+        swift_hash_path_suffix: '{{ swift_suffix }}'
+        swift_hash_path_prefix: '{{ swift_prefix }}'
+
+- name: Configure default storage policy.
+  crudini:
+    path: /etc/swift/swift.conf
+    config:
+      'storage-policy:0':
+        name:    Policy-0
+        default: yes
+
+- name: Ensure /etc/swift ownership.
+  file:
+    path:    /etc/swift
+    state:   directory
+    owner:   root
+    group:   swift
+    recurse: yes
+  changed_when: no

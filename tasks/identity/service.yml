@@ -1,0 +1,9 @@
+---
+- name:         Get list of services.
+  register:     openstack_services
+  changed_when: no
+  command:      openstack service list -f value -c Type
+
+- name:    Create Swift service.
+  command: openstack service create --name swift --description "OpenStack Object Storage" object-store
+  when:    '"object-store" not in openstack_services.stdout'
