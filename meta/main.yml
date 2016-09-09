@@ -1,0 +1,18 @@
+galaxy_info:
+  author:      Igor Sidorov
+  description: OpenStack Swift Controller Node
+
+  license: BSD
+
+  min_ansible_version: 1.2
+
+  platforms:
+    - name: EL
+      versions:
+        - 7
+
+  galaxy_tags:
+    - openstack
+
+dependencies:
+  - binarycode.crudini
