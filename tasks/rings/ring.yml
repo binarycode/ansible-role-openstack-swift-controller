@@ -1,15 +1,15 @@
 ---
 - name: Create ring.
-  command: 'swift-ring-builder {{ ring_name }}.builder create {{ swift_partition_power }} {{ swift_replicas }} 1'
+  command: 'swift-ring-builder {{ ring.name }}.builder create {{ swift_partition_power }} {{ swift_replicas }} 1'
   args:
     chdir:   /etc/swift
-    creates: '/etc/swift/{{ ring_name }}.builder'
+    creates: '/etc/swift/{{ ring.name }}.builder'
 
 - include: node.yml zone={{ item.zone }} ip={{ item.ip }} device={{ item.device }}
   with_items: '{{ nodes }}'
 
 - name: Rebalance ring.
-  command: 'swift-ring-builder {{ ring_name }}.builder rebalance'
+  command: 'swift-ring-builder {{ ring.name }}.builder rebalance'
   ignore_errors: yes
   args:
     chdir: /etc/swift

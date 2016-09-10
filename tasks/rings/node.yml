@@ -1,5 +1,5 @@
 - name:          Check if node is already present in the ring.
-  command:       'swift-ring-builder {{ ring_name }}.builder search --zone {{ zone }} --ip {{ ip }} --device {{ device }}'
+  command:       'swift-ring-builder {{ ring.name }}.builder search --zone {{ zone }} --ip {{ ip }} --device {{ device }}'
   ignore_errors: yes
   register:      node_presence_check
   changed_when:  no
@@ -7,7 +7,7 @@
     chdir: /etc/swift
 
 - name:    Add storage node to the ring.
-  command: 'swift-ring-builder {{ ring_name }}.builder add --region 1 --zone {{ zone }} --ip {{ ip }} --port 6002 --device {{ device }} --weight 100'
+  command: 'swift-ring-builder {{ ring.name }}.builder add --region 1 --zone {{ zone }} --ip {{ ip }} --port {{ ring.port }} --device {{ device }} --weight 100'
   args:
     chdir: /etc/swift
   when: '{{ ip not in node_presence_check.stdout }}'

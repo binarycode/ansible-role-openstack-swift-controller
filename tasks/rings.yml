@@ -1,8 +1,11 @@
 ---
 - include: rings/ring.yml
   with_items:
-    - account
-    - container
-    - object
+    - name: account
+      port: 6002
+    - name: container
+      port: 6001
+    - name: object
+      port: 6000
   loop_control:
-    loop_var: ring_name
+    loop_var: ring
